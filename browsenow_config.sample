@@ -1,0 +1,25 @@
+[deploy_lambda]
+func_name = BrowseNowLambda
+
+[api_auth]
+AWS_KEY = hoge
+AWS_KEY_ID = hoge
+TWITTER_CONSUMER_KEY = hoge
+TWITTER_CONSUMER_SECRET = hoge
+
+[api_gateway]
+api_gateway_id = hoge
+
+[lambda]
+db_session_table = hoge
+db_region = ap-northeast-1
+db_session_expire_min = 10080
+
+tw_callback_url = https://api.browsenow.link/func/auth-callback
+tw_request_token_url = https://twitter.com/oauth/request_token
+tw_authenticate_url = https://twitter.com/oauth/authorize
+tw_access_token_url = https://twitter.com/oauth/access_token
+
+page_main = https://example.com/main.html
+page_auth_error = http://example.com/auth_error.html
+

@@ -1,0 +1,8 @@
+tmp/
+old/
+debug/
+
+bn_config
+browsenow_config
+deploy_config
+config.js
