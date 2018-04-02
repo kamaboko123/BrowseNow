@@ -15,7 +15,7 @@ db_session_table = hoge
 db_region = ap-northeast-1
 db_session_expire_min = 10080
 
-tw_callback_url = https://api.browsenow.link/func/auth-callback
+tw_callback_url = https://example.com/func/auth-callback
 tw_request_token_url = https://twitter.com/oauth/request_token
 tw_authenticate_url = https://twitter.com/oauth/authorize
 tw_access_token_url = https://twitter.com/oauth/access_token
