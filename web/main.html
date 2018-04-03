@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/4.0.0/cosmo/bootstrap.min.css" rel="stylesheet" integrity="sha384-UU2jkdv1M9UEjLje/kygVxqMBq9Jrg9z+Gqvw972H6BqKTzDvLaRJfK7PnzLM4SI" crossorigin="anonymous">
+    <!--
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    -->
+
+    <title>BrowseNow! v4.0(メインページ)</title>
+    
+    <style type="text/css">
+        #loading-bg{
+            height: 100%;
+            width: 100%;
+            background: #FFFFFF;
+            opacity: 0.8;
+            position: fixed;
+        }
+        
+        #loading {
+            height: 96px; /* gif画像の高さ */
+            margin: -68px 0 0 -68px; /* gif画像を画面中央に */
+            padding: 20px; /* gif画像を大きく */
+            background: #FFFFFF; /* gif画像の背景色 */
+            opacity: 0.8; /* 透過させる */
+            border-radius: 15px; /* 丸角 */
+            position: fixed; /* gif画像をスクロールさせない */
+            left: 50%; /* gif画像を画面横中央へ */
+            top: 50%; /* gif画像を画面縦中央へ */
+        }
+    </style>
+    
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
+        <a href="https://browsenow.link" target="_blank" class="navbar-brand">BrowseNow!(v4.0 beta)</a>
+    </nav>
+    
+    <div id="loading-bg">
+        <div id="loading">
+            <img width="96px" src="gif-load2.gif">
+        </div>
+    </div>
+    
+    <div class="container" id="auth" style="display:none">
+        <div class="alert alert-success" role="alert" id="auth_success">
+            <p>
+                認証が完了しました。<br>
+                ブックマークレットを開き直してください。<br>
+                この画面は約5秒後に自動的に閉じます。
+            </p>
+        </div>
+    </div>
+    
+    <div class="container" id="post" style="">
+        <div class="alert alert-success p-1" role="alert" id="success" style="display:none">
+            <p class="m-1" id="success_message1"></p>
+            <p class="m-1" id="success_message2"></p>
+        </div>
+        <div class="alert alert-danger p-1" role="alert" id="error" style="display:none">
+            <p class="m-1" id="error_message1"></p>
+            <p class="m-1" id="error_message2"></p>
+        </div>
+            
+        <form>
+            <div class="form-group">
+                <label for="url">URL</label>
+                <input type="text" class="form-control" id="url" placeholder="URL">
+            </div>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" placeholder="Title">
+            </div>
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <input type="text" class="form-control" id="comment" placeholder="Comment">
+            </div>
+            <button type="button" class="btn btn-secondary" id="posttw">投稿</button> <span id="counter"></p>
+        </form>
+    </div>
+    
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <script src="./config.js"></script>
+    <script src="./lib.js"></script>
+    
+    <script>
+        window.resizeTo(w_size_w, w_size_h);
+        $("button#posttw").attr("disabled", true);
+        
+        var url_query = getQueryString(window.location.search);
+        $("input#url").val(decodeURIComponent(url_query["url"]));
+        $("input#title").val(decodeURIComponent(url_query["title"]));
+        
+        checkCred(function(data){
+            if(data.verify == true){
+                if(url_query["auth"] == 1){
+                    $("#auth").css("display", "block");
+                    setTimeout(function(){window.close();}, 5000);
+                }
+                else{
+                    $("#post").css("display", "block");
+                }
+                //$("#loading").hide();
+                $("#loading-bg").css("display", "none");
+                $("#loading").css("display", "none");
+                $("input#comment").focus();
+                $("button#posttw").attr("disabled", false);
+            }
+            else{
+                getAuthUrl(function(data){
+                    location.href = data.auth_url;
+                });
+            }
+        });
+        
+        var ptw = function(){
+            console.log("post");
+            $("div#success").css("display", "none");
+            $("div#error").css("display", "none");
+            $("button#posttw").attr("disabled", true);
+            $("#loading-bg").css("display", "block");
+            $("#loading").css("display", "block");
+            
+            tw = $("input#comment").val() + " / " + $("input#title").val() + "(" + $("input#url").val() + ")" + hashtag;
+            
+            postTweet(tw, function(data){
+                $("#loading-bg").css("display", "none");
+                $("#loading").css("display", "none");
+                
+                if(data.success == true){
+                    $("#success_message1").text("投稿に成功しました。");
+                    $("#success_message2").text("このウインドウは2秒後に自動的に閉じます。");
+                    $("div#success").css("display", "block");
+                    setTimeout(function(){window.close();}, 2000);
+                }
+                else{
+                    $("#error_message1").text("投稿に失敗しました。");
+                    $("#error_message2").text(data.detail);
+                    $("div#error").css("display", "block");
+                    $("button#posttw").attr("disabled", false);
+                }
+            });
+        }
+        
+        var posttw = document.getElementById("posttw");
+        posttw.addEventListener('click', ptw);
+        
+        //ctrl + enter
+        
+        $("input#url").keydown(function(e){
+            if(event.ctrlKey && e.keyCode === 13){
+                console.log("[ctr+enter]url");
+                ptw();
+            }
+        });
+        
+        $("input#title").keydown(function(e){
+            if(event.ctrlKey && e.keyCode === 13){
+                console.log("[ctr+enter]title");
+                ptw();
+            }
+        });
+        
+        $("input#comment").keydown(function(e){
+            if(event.ctrlKey && e.keyCode === 13){
+                console.log("[ctr+enter]comment");
+                ptw();
+            }
+        });
+        
+        
+        //文字数カウント
+        $(window).bind('keydown keyup keypress change load', function check_length(){
+            //残り文字数  = 140 - ([タイトル] + [コメント] + [短縮されたURL(23)] + [ハッシュタグ デフォルト：#browse_now(11)] + [その他デミリタとか(7)]
+            var count = 140 - ($("input#title").val().length + $("input#comment").val().length + 23 + 7 + hashtag.length);
+            $("span#counter").text(count + "文字");
+        
+            //0文字以下になったら赤字にしてボタンを無効にする
+            if(count < 0){
+                $("span#counter").css("color", "red");
+                $("button#posttw").attr("disabled", true);
+            }else{
+                $("span#counter").css("color", "black");
+                $("button#posttw").attr("disabled", false);
+            }
+        });
+    
+    </script>
+    <!--
+    <style type="text/css">
+        #loading {
+            height: 96px; /* gif画像の高さ */
+            margin: -68px 0 0 -68px; /* gif画像を画面中央に */
+            padding: 20px; /* gif画像を大きく */
+            background: #FFFFFF; /* gif画像の背景色 */
+            opacity: 0.8; /* 透過させる */
+            border-radius: 15px; /* 丸角 */
+            position: fixed; /* gif画像をスクロールさせない */
+            left: 50%; /* gif画像を画面横中央へ */
+            top: 50%; /* gif画像を画面縦中央へ */
+        }
+    </style>
+    -->
+</body>

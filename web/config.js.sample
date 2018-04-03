@@ -1,0 +1,9 @@
+var w_size_w = 520;
+var w_size_h = 500;
+var w_size = "width=" + w_size_w + ",height=" + w_size_h;
+var auth_req_url = "https://example.com/func/auth-request";
+var post_url = "https://example.com/func/post-tweet";
+var check_cred_url = "https://example.com/func/check-credential";
+var main_page_url = 'javascript:(function(e){window.open("https://example.com/main.html?url="+e(location.href)+"&title="+e(document.title),null,"' + w_size + '");})(encodeURIComponent);'
+var hashtag = ' #browsenow'
+
