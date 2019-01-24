@@ -1,5 +1,9 @@
 # BrowseNow
 
+## Try it!
+You can use this application at [here](https://browsenow.link/).  
+(Currently support language is japanese only.)
+
 ## What is this?
 BrowseNow is bookmarklet app that post your viewing page to twitter.  
 Currently, There are not all application codes, deploy codes and related settings.  
