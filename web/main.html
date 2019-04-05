@@ -131,8 +131,12 @@
             $("#loading-bg").css("display", "block");
             $("#loading").css("display", "block");
             
-            tw = $("input#comment").val() + " / " + $("input#title").val() + "(" + $("input#url").val() + ")" + hashtag;
-            
+            if($("input#comment").val() === ""){
+                tw = $("input#title").val() + "(" + $("input#url").val() + ")" + hashtag;
+            }
+            else{
+                tw = $("input#comment").val() + " / " + $("input#title").val() + "(" + $("input#url").val() + ")" + hashtag;
+            }
             postTweet(tw, function(data){
                 $("#loading-bg").css("display", "none");
                 $("#loading").css("display", "none");
